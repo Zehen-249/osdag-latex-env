@@ -13,28 +13,34 @@ build:
     - {{ PYTHON }} -m pip install . --no-deps -vv
 
     # Windows
-    - mkdir "%PREFIX%\\Library\\share\\osdag_latex_env"    # [win]
-    - robocopy "assets" "%PREFIX%\\Library\\share\\osdag_latex_env" /E || IF %ERRORLEVEL% GEQ 8 EXIT /B 1  # [win]
+    - mkdir "%PREFIX%\\Library\\share\\osdag_latex_env"     # [win]
+    - robocopy "assets" "%PREFIX%\\Library\\share\\osdag_latex_env" /E /XD bin || IF %ERRORLEVEL% GEQ 8 EXIT /B 1     # [win]
+    - mkdir "%PREFIX%\\Library\\share\\osdag_latex_env\\bin"    # [win]
+    - robocopy assets\\bin\\x86_64-windows "%PREFIX%\\Library\\share\\osdag_latex_env\\bin\\x86_64-windows" /E || IF %ERRORLEVEL% GEQ 8 EXIT /B 1      # [win]
 
     # Linux
-    - mkdir -p "$PREFIX/share/osdag_latex_env"               # [linux]
-    - cp -r assets/* "$PREFIX/share/osdag_latex_env"  # [linux]
+    - mkdir -p "$PREFIX/share/osdag_latex_env"         # [linux]
+    - rsync -a --exclude=bin assets/ "$PREFIX/share/osdag_latex_env/"     # [linux]  
+    - mkdir -p "$PREFIX/share/osdag_latex_env/bin"      # [linux]
+    - cp -r assets/bin/x86_64-linux/ "$PREFIX/share/osdag_latex_env/bin/"     # [linux]
 
-    # macOS
-    - mkdir -p "$PREFIX/share/osdag_latex_env"                # [osx]
-    - cp -r assets/* "$PREFIX/share/osdag_latex_env"  # [osx]
+    # MacOS
+    - mkdir -p "$PREFIX/share/osdag_latex_env"    # [osx]
+    - rsync -a --exclude=bin assets/ "$PREFIX/share/osdag_latex_env/"   # [osx]
+    - mkdir -p "$PREFIX/share/osdag_latex_env/bin"    # [osx]
+    - cp -r assets/bin/*darwin "$PREFIX/share/osdag_latex_env/bin/"     # [osx]
 
 requirements:
   build:
-    - python
+    - python>=3.11,<=3.13
     - setuptools
     - pip
   host:
     - setuptools
     - pip
-    - python
+    - python>=3.11,<=3.13
   run:
-    - python
+    - python>=3.11,<=3.13
 
 about:
   summary: Self-contained cross-platform LaTeX toolchain for Osdag
